@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>id.web.fitrarizki</groupId>
-	<artifactId>healthcare</artifactId>
+	<artifactId>fc-healthcare</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fc-healthcare</name>
 	<description>Health Care Project</description>

@@ -1,14 +1,20 @@
 package id.web.fitrarizki.healthcare.common.exeption;
 
 import id.web.fitrarizki.healthcare.dto.ErrorResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.SignatureException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -35,7 +41,22 @@ public class GeneralExceptionHandler {
                 .build();
     }
 
-
+    @ExceptionHandler({
+            AccessDeniedException.class,
+            SignatureException.class,
+            ExpiredJwtException.class,
+            AuthenticationException.class,
+            InsufficientAuthenticationException.class
+    })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public @ResponseBody ErrorResponse handleForbiddenException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        return ErrorResponse.builder()
+                .code(HttpStatus.FORBIDDEN.value())
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
     @ExceptionHandler({
             ResourceNotFoundException.class,
