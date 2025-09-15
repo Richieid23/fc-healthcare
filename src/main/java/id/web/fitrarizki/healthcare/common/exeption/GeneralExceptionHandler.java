@@ -24,6 +24,7 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse handleBadRequestException(BadRequestException e) {
+        log.error("StackTrace: ", e);
         return ErrorResponse.builder()
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage())
@@ -34,6 +35,7 @@ public class GeneralExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public @ResponseBody ErrorResponse handleUnauthorizeException(InvalidPasswordException e) {
+        log.error("StackTrace: ", e);
         return ErrorResponse.builder()
                 .code(HttpStatus.UNAUTHORIZED.value())
                 .message(e.getMessage())
@@ -50,6 +52,7 @@ public class GeneralExceptionHandler {
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public @ResponseBody ErrorResponse handleForbiddenException(HttpServletResponse response, Exception e) {
+        log.error("StackTrace: ", e);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return ErrorResponse.builder()
                 .code(HttpStatus.FORBIDDEN.value())
@@ -65,6 +68,7 @@ public class GeneralExceptionHandler {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public @ResponseBody ErrorResponse handleResourceNotFoundException(RuntimeException e) {
+        log.error("StackTrace: ", e);
         return ErrorResponse.builder()
                 .code(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -78,6 +82,7 @@ public class GeneralExceptionHandler {
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public @ResponseBody ErrorResponse handleResourceConflictException(RuntimeException e) {
+        log.error("StackTrace: ", e);
         return ErrorResponse.builder()
                 .code(HttpStatus.CONFLICT.value())
                 .message(e.getMessage())
@@ -90,6 +95,7 @@ public class GeneralExceptionHandler {
     public @ResponseBody ErrorResponse handleGenericException(HttpServletRequest request, Exception e) {
         log.error("Telah terjadi kesalahan pada endpoint {}, status code :{}, error_message: {}",
                 request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        log.error("StackTrace: ", e);
         return ErrorResponse.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.getMessage())
