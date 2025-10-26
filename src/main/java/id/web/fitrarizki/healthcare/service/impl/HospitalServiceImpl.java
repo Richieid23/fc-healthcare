@@ -25,7 +25,7 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public Page<HospitalResponse> search(String keyword, Pageable pageable) {
-        return null;
+        return hospitalRepository.findByNameContainingIgnoreCase(keyword, pageable).map(HospitalResponse::fromHospital);
     }
 
     @Override
@@ -52,11 +52,16 @@ public class HospitalServiceImpl implements HospitalService {
         hospital.setPhone(hospitalReq.getPhone());
         hospital.setEmail(hospitalReq.getEmail());
         hospital.setDescription(hospitalReq.getDescription());
+
+        String key = HOSPITAL_CACHE_KEY + id;
+        cacheService.evict(key);
         return HospitalResponse.fromHospital(hospitalRepository.save(hospital));
     }
 
     @Override
     public void delete(Long id) {
         hospitalRepository.delete(hospitalRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hospital not found with id: " + id)));
+        String key = HOSPITAL_CACHE_KEY + id;
+        cacheService.evict(key);
     }
 }
