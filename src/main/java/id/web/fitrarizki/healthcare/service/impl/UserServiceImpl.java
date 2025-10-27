@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -134,5 +135,28 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return UserResponse.fromUserAndRoles(user, roleRepository.findByUserId(user.getId()));
+    }
+
+    @Override
+    public UserResponse grantUserRoles(Long userId, RoleType roleType) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        Role role = roleRepository.findByName(roleType)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found with name: " + roleType));
+
+        Optional<UserRole> existRole = userRoleRepository.findByUserIdAndRoleId(user.getId(), role.getId());
+
+        if (existRole.isPresent()) {
+            throw new IllegalStateException("User with id "+ userId +" already has role "+ roleType);
+        }
+
+        UserRole.UserRoleId userRoleId = new UserRole.UserRoleId(user.getId(), role.getId());
+        UserRole userRole = UserRole.builder()
+                .id(userRoleId)
+                .build();
+
+        userRoleRepository.save(userRole);
+        List<Role> userRoles =  roleRepository.findByUserId(userId);
+        return UserResponse.fromUserAndRoles(user, userRoles);
     }
 }
